@@ -74,6 +74,9 @@ int main(int args, char *argv[]) {
 				printf("Номер зачётки: %d\nИмя: %s\nСредний балл: %lf\n", student.num, student.name, student.grade);
 				break;
 			default:
+				WriteFile(hWritePipe, &command, sizeof(int), &dwBytesWrite, NULL);
+				hServerEnableRead = OpenEvent(EVENT_MODIFY_STATE, FALSE, "ServerEnableRead");
+				SetEvent(hServerEnableRead);
 				flag = false;
 				break;
 		}

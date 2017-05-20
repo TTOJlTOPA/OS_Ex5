@@ -73,9 +73,8 @@ int main()
 		switch (command) {
 		case 1:
 			WaitForSingleObject(hServerEnableRead, INFINITE);
-			ReadFile(hReadPipe, &student, sizeof(Student), &dwBytesRead, NULL);
+			ReadFile(hReadPipe, &students[index], sizeof(Student), &dwBytesRead, NULL);
 			fout = fileCreateOut(fileName);
-			students[index] = student;
 			fout << studentsNum;
 			for (int i = 0; i < studentsNum; i++) {
 				fout.write((char*)&students[i], sizeof(Student));
@@ -92,10 +91,8 @@ int main()
 			{
 				fin.read((char*)&students[i], sizeof(Student));
 				if (students[i].num == num) {
-					student = students[i];
-					WriteFile(hWritePipe, &student, sizeof(Student), &dwBytesWrite, NULL);
+					WriteFile(hWritePipe, &students[i], sizeof(Student), &dwBytesWrite, NULL);
 					index = i;
-					break;
 				}
 			}
 			fin.close();
@@ -103,6 +100,16 @@ int main()
 			SetEvent(hClientEnableRead);
 			break;
 		default:
+			printf("%s:\n", "Итоговый файл");
+			fin = fileCreateIn(fileName);
+			fin >> studentsNum;
+			students = new Student[studentsNum];
+			for (int i = 0; i < studentsNum; i++)
+			{
+				fin.read((char*)&students[i], sizeof(Student));
+				printf("Номер зачётки: %d\nИмя студента: %s\nСредний балл: %lf\n", students[i].num, students[i].name, students[i].grade);
+			}
+			fin.close();
 			flag = false;
 			break;
 		}
